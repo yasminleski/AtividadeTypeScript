@@ -13,5 +13,4 @@ import Person from './Person.js'
         this.issue = issue
     }
 }
-
 export default Periodical
