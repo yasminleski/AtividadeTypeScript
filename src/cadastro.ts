@@ -1,7 +1,7 @@
-import Book from '../../AtividadeTS/src/entities/Book.js'
-import Document from '../../AtividadeTS/src/entities/Document.js'
-import Periodical from '../../AtividadeTS/src/entities/Periodical.js'
-import Person from '../../AtividadeTS/src/entities/Person.js'
+// import Book from '../../AtividadeTS/src/entities/Book.js'
+// import Document from '../../AtividadeTS/src/entities/Document.js'
+// import Periodical from '../../AtividadeTS/src/entities/Periodical.js'
+// import Person from '../../AtividadeTS/src/entities/Person.js'
 
 const selectType = document.querySelector<HTMLSelectElement>('#type')!
 const title = document.querySelector<HTMLInputElement>('#title')!
