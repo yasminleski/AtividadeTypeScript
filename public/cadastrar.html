@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <title>Livro ou Periodical</title>
+
+</head>
+<body>
+    <form novalidate>
+        <h1> Cadastro de Livro ou Periodical </h1>
+        <p>  Preencha os campos abaixo: </p>
+        <select id="type" class="selects">
+            <option value=""> Selecione</option>
+            <option value="livros"> Livros</option>
+            <option value="periodicos"> Periodicos </option>
+        </select> <br>
+        <input id="title" placeholder="Digite o titulo" class="inputDoc">
+        <input id="subtitle" placeholder="Digite o sutitulo"class="inputDoc">
+        <input id="publishedAt" type="date" class="inputDoc">
+        <input id="author" placeholder="Digite o author" class="inputDoc">
+        <input id="isbn" placeholder="Digite o ISBN" class="inputDoc">
+        <input id="edition" placeholder="Digite a edição" class="inputDoc">
+        <input id="volume" placeholder="Digite o volume" class="inputDoc">
+
+        <input id="issn" placeholder="Digite o ISSN" class="inputDoc">
+        <input id="volume" placeholder="Digite o volume" class="inputDoc">
+        <input id="issue" placeholder="Digite o ISSUE" class="inputDoc">
+       
+
+        <input class="btn" type="submit" value="Salvar">
+
+        <p id="message"></p>   
+
+    </form>
+
+    <script src="cadastro.js" type="module"></script>
+  
+</body>
+</html>

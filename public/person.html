@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <title>Cadastro de Autor </title>
+</head>
+<body>
+    <form novalidate>
+        <h1> Cadastro de Autor </h1>
+        <p>Preencha os campos abaixo: </p>
+        <input id="name" placeholder="Nome do autor" class="inputPerson">
+        <input id="birth" type="date" class="inputPerson">
+        <select id="gender"  class="inputPerson">
+            <option value="">Selecione...</option>
+            <option value="f">Feminino</option>
+            <option value="m">Masculino</option>
+        </select>
+
+
+    <input class="btn" type="submit" value="Salvar">
+
+  <p id="message"></p>
+    </form>
+
+  <script src="formPerson.js" type="module"></script>
+</body>
+</html>
