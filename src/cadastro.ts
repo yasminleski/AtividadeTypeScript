@@ -1,12 +1,13 @@
 import Book from './entities/Book.js'
 import Periodical from './entities/Periodical.js'
+import Person from './entities/Person.js'
 
 
 const selectType = document.querySelector<HTMLSelectElement>('#type')!
 const title = document.querySelector<HTMLInputElement>('#title')!
 const subtitle = document.querySelector<HTMLInputElement>('#subtitle')!
 const publishedAt = document.querySelector<HTMLInputElement>('#publishedAt')!
-const author = document.querySelector<HTMLInputElement>('#author')!
+const author = document.querySelector<HTMLSelectElement>('#author')!
 const isbn = document.querySelector<HTMLInputElement>('#isbn')!
 const edition = document.querySelector<HTMLInputElement>('#edition')!
 const volume = document.querySelector<HTMLInputElement>('#volume')!
@@ -17,6 +18,18 @@ const form = document.querySelector<HTMLFormElement>('form')!
 
 const books: Book[] = []
 const periodicais: Periodical[] = []
+
+let personsLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  // bucar no local storage a person
+let names = personsLocalStorage.map(p => p.name)  // pegar so os name de person
+
+function carregarAuthor() {
+    author.options.length = 0 
+    author.add(new Option("Selecione um autor:", ""))
+    for (var i = 0; i < names.length; i++) {
+        author.add(new Option(names[i].toString(), i.toString()));
+    }
+}
+
 showBooks()
 showPeriodical()
 
@@ -31,6 +44,9 @@ selectType.addEventListener('change', (event) => {
         volume.style.display = "block";
         issue.style.display = "none";
         issn.style.display = "none";
+
+     carregarAuthor()
+
     }
     else if(selectType.value == "periodicos"){
         title.style.display = "block";
@@ -42,6 +58,7 @@ selectType.addEventListener('change', (event) => {
         volume.style.display = "block";
         isbn.style.display = "none";
         edition.style.display = "none";
+        carregarAuthor()
     } 
     else{
         title.style.display = "none";
@@ -52,14 +69,19 @@ selectType.addEventListener('change', (event) => {
         issn.style.display = "none";
         volume.style.display = "none";
         isbn.style.display = "none";
-        edition.style.display = "none";   
+        edition.style.display = "none";  
+        carregarAuthor() 
     }
 });
 
 form.addEventListener('submit', (ev: Event) =>{
     ev.preventDefault()
 
-    if (selectType.value == "livros"){
+    var indice = author.value
+    let person = personsLocalStorage[parseInt(indice)]
+
+    
+
 
     if(!title.value.trim()){
         message.innerText = 'Preenchao campo "Titulo"'
@@ -71,11 +93,6 @@ form.addEventListener('submit', (ev: Event) =>{
         subtitle.focus()
         return
     }
-    if(!publishedAt.value){
-        message.innerText = 'Preenchao campo ""'
-        publishedAt.focus()
-        return
-    }
     const dataPublicacao = new Date(`${publishedAt.value}T00:00:00`)
     console.log(publishedAt.value)
   
@@ -85,17 +102,25 @@ form.addEventListener('submit', (ev: Event) =>{
       return
     }
 
+    if(!publishedAt.value){
+        message.innerText = 'Preenchao campo "data de publicação"'
+        publishedAt.focus()
+        return
+    }
+
     if(!author.value.trim()){
         message.innerText = 'Preenchao campo "author"'
         author.focus()
         return
     }
-    const regexAuthor = /\w+\s\w+/g
-    if(!regexAuthor.test(author.value.trim())){
-        message.innerText = 'Preenchao campo ""'
-        author.focus()
+
+    if(!volume.value.trim()){
+        message.innerText = 'Preenchao campo "volume"'
+        volume.focus()
         return
     }
+
+    if (selectType.value == "livros"){
 
     if(!isbn.value.trim()){
         message.innerText = 'Preenchao campo "ISBN"'
@@ -107,11 +132,7 @@ form.addEventListener('submit', (ev: Event) =>{
         edition.focus()
         return
     }
-    if(!volume.value.trim()){
-        message.innerText = 'Preenchao campo "volume"'
-        volume.focus()
-        return
-    }
+
 }
    else if (selectType.value == "periodicos"){
     if(!issn.value.trim()){
@@ -119,18 +140,16 @@ form.addEventListener('submit', (ev: Event) =>{
         issn.focus()
         return
     }
-    if(!volume.value.trim()){
-        message.innerText = 'Preenchao campo "volume"'
-        volume.focus()
-        return
-    }
+
     if(!issue.value.trim()){
-        message.innerText = 'Preenchao campo "ISSUE"'
+        message.innerText = 'Preencha o campo "ISSUE"'
         issue.focus()
         return
     } }
 
-        try{
+if (selectType.value == "livros") {
+
+    try{
         var datapublishedAt = new Date(publishedAt.value)
 
         const book = new Book(
@@ -140,7 +159,7 @@ form.addEventListener('submit', (ev: Event) =>{
             title.value,
             subtitle.value,
             datapublishedAt,
-            author.value 
+            person
         )
 
         books.push(book)
@@ -154,7 +173,14 @@ form.addEventListener('submit', (ev: Event) =>{
         return
       }
 
+    }
+
+    if(selectType.value == "periodicos") {
       try{
+          
+        let datapublishedAt = new Date(publishedAt.value)
+
+
         const periodical = new Periodical(
             parseInt(issn.value),
             parseInt(volume.value),
@@ -162,7 +188,7 @@ form.addEventListener('submit', (ev: Event) =>{
             title.value,
             subtitle.value,
             datapublishedAt,
-            author.value
+            person
         )
         
         periodicais.push(periodical)
@@ -176,7 +202,8 @@ form.addEventListener('submit', (ev: Event) =>{
         return
       }
 
-})
+
+   }   })
 function showBooks() {
     if (localStorage.getItem('books')) {
       const data = JSON.parse(localStorage.getItem('books')!)
