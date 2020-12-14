@@ -1,13 +1,20 @@
 import {Gender} from './entities/Person.js'
 import Person from './entities/Person.js'
+import { capitalize } from './stringsFuncionais.js'
 
 const name = document.querySelector<HTMLInputElement>('#name')!
 const birth = document.querySelector<HTMLInputElement>('#birth')!
 const gender = document.querySelector<HTMLSelectElement>('#gender')!
 const form = document.querySelector<HTMLFontElement>('form')!
 const message = document.querySelector<HTMLDivElement>('#message')!
+const table = document.querySelector('table')!
+const filtro = document.querySelector<HTMLInputElement>('#filtro')!
+
+let personLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person") || '{}')  
+let namesTable = personLocalStorage.map(p => p.name)
 
 const persons: Person[] = []
+
 showPersons()
 
 form.addEventListener('submit', (ev: Event) => {
@@ -42,14 +49,14 @@ form.addEventListener('submit', (ev: Event) => {
     }
 
     try{
+
         var birthNew = new Date(birth.value)
 
-        const person = new Person(
-            name.value,
-            birthNew,
-            gender.value === 'f' ? Gender.Female : Gender.Male
-            )
-
+      const person = new Person(
+        name.value,
+        birthNew,
+        gender.value === 'f' ? Gender.Female : Gender.Male
+        )
         persons.push(person)
 
         localStorage.setItem('person', JSON.stringify(persons))
@@ -76,5 +83,26 @@ function showPersons() {
        ))
      }
    }
- } 
 
+   let sortPersons = [...namesTable].sort()
+   let lines = ''
+ 
+   for (let i = 0; i< sortPersons.length; i++) {
+     lines += `
+       <tr>
+         <td>${sortPersons[i]}</td>
+       </tr>
+       `  
+   }
+  table.style.display = 'table'
+  table.innerHTML = `
+    <thead>
+      <tr> 
+          Autor
+      </tr>
+    </thead>
+    <tbody>
+      ${lines}
+    </tbody>
+  `
+}

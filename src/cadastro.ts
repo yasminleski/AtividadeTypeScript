@@ -1,7 +1,8 @@
 import Book from './entities/Book.js'
+import Document from './entities/Document.js'
 import Periodical from './entities/Periodical.js'
 import Person from './entities/Person.js'
-
+import { capitalize } from './stringsFuncionais.js'
 
 const selectType = document.querySelector<HTMLSelectElement>('#type')!
 const title = document.querySelector<HTMLInputElement>('#title')!
@@ -15,18 +16,19 @@ const issn = document.querySelector<HTMLInputElement>('#issn')!
 const issue = document.querySelector<HTMLInputElement>('#issue')!
 const message = document.querySelector<HTMLParagraphElement>('#message')!
 const form = document.querySelector<HTMLFormElement>('form')!
+const table = document.querySelector('table')!
 
 const books: Book[] = []
 const periodicais: Periodical[] = []
 
-let personsLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  // bucar no local storage a person
-let names = personsLocalStorage.map(p => p.name)  // pegar so os name de person
+let bookLocalStorage: Array<Book> = JSON.parse(localStorage.getItem("book")!)
+let booksTable = bookLocalStorage.map(p => p.title)!
 
 function carregarAuthor() {
     author.options.length = 0 
     author.add(new Option("Selecione um autor:", ""))
-    for (var i = 0; i < names.length; i++) {
-        author.add(new Option(names[i].toString(), i.toString()));
+    for (var i = 0; i < booksTable.length; i++) {
+        author.add(new Option(booksTable[i].toString(), i.toString()));
     }
 }
 
@@ -44,9 +46,7 @@ selectType.addEventListener('change', (event) => {
         volume.style.display = "block";
         issue.style.display = "none";
         issn.style.display = "none";
-
-     carregarAuthor()
-
+        carregarAuthor()
     }
     else if(selectType.value == "periodicos"){
         title.style.display = "block";
@@ -72,24 +72,23 @@ selectType.addEventListener('change', (event) => {
         edition.style.display = "none";  
         carregarAuthor() 
     }
-});
+})
 
 form.addEventListener('submit', (ev: Event) =>{
     ev.preventDefault()
 
     var indice = author.value
-    let person = personsLocalStorage[parseInt(indice)]
-
-    
+    let bookL = bookLocalStorage[parseInt(indice)]
 
 
     if(!title.value.trim()){
-        message.innerText = 'Preenchao campo "Titulo"'
+        message.innerText = 'Preencha o campo "Titulo"'
         title.focus()
         return
-    }
+    }   
+
     if(!subtitle.value.trim()){
-        message.innerText = 'Preenchao campo "subtitulo"'
+        message.innerText = 'Preencha o campo "subtitulo"'
         subtitle.focus()
         return
     }
@@ -103,7 +102,7 @@ form.addEventListener('submit', (ev: Event) =>{
     }
 
     if(!publishedAt.value){
-        message.innerText = 'Preenchao campo "data de publicação"'
+        message.innerText = 'Preencha o campo "data de publicação"'
         publishedAt.focus()
         return
     }
@@ -115,7 +114,7 @@ form.addEventListener('submit', (ev: Event) =>{
     }
 
     if(!volume.value.trim()){
-        message.innerText = 'Preenchao campo "volume"'
+        message.innerText = 'Preencha o campo "volume"'
         volume.focus()
         return
     }
@@ -123,12 +122,12 @@ form.addEventListener('submit', (ev: Event) =>{
     if (selectType.value == "livros"){
 
     if(!isbn.value.trim()){
-        message.innerText = 'Preenchao campo "ISBN"'
+        message.innerText = 'Preencha o campo "ISBN"'
         isbn.focus()
         return
     }
     if(!edition.value.trim()){
-        message.innerText = 'Preenchao campo "edição"'
+        message.innerText = 'Preencha o campo "edição"'
         edition.focus()
         return
     }
@@ -136,7 +135,7 @@ form.addEventListener('submit', (ev: Event) =>{
 }
    else if (selectType.value == "periodicos"){
     if(!issn.value.trim()){
-        message.innerText = 'Preenchao campo "ISSN"'
+        message.innerText = 'Preencha o campo "ISSN"'
         issn.focus()
         return
     }
@@ -145,7 +144,8 @@ form.addEventListener('submit', (ev: Event) =>{
         message.innerText = 'Preencha o campo "ISSUE"'
         issue.focus()
         return
-    } }
+    } 
+}
 
 if (selectType.value == "livros") {
 
@@ -156,10 +156,10 @@ if (selectType.value == "livros") {
             parseInt(isbn.value),
             parseInt(edition.value),
             parseInt(volume.value),
-            title.value,
+            capitalize(title.value),
             subtitle.value,
             datapublishedAt,
-            person
+            bookL,
         )
 
         books.push(book)
@@ -171,9 +171,8 @@ if (selectType.value == "livros") {
     catch (error: any) {
         message.innerText = 'Hm, algo deu errado :/'
         return
-      }
-
     }
+}
 
     if(selectType.value == "periodicos") {
       try{
@@ -185,10 +184,10 @@ if (selectType.value == "livros") {
             parseInt(issn.value),
             parseInt(volume.value),
             parseInt(issue.value),
-            title.value,
+            capitalize(title.value),
             subtitle.value,
             datapublishedAt,
-            person
+            booksTable
         )
         
         periodicais.push(periodical)
@@ -201,9 +200,8 @@ if (selectType.value == "livros") {
         message.innerText = 'Hm, algo deu errado :/'
         return
       }
-
-
-   }   })
+   }   
+})
 function showBooks() {
     if (localStorage.getItem('books')) {
       const data = JSON.parse(localStorage.getItem('books')!)
@@ -241,4 +239,26 @@ function showBooks() {
         ))
      }
    }
+   let sortPersons = [...booksTable].sort()
+   let lines = ''
+ 
+   for (let i = 0; i< sortPersons.length; i++) {
+     lines +=  `
+       <tr>
+         <td>${sortPersons[i]}</td>
+       </tr>
+       `  
+   }
+
+  table.style.display = 'table'
+  table.innerHTML = `
+    <thead>
+      <tr> 
+          Autor
+      </tr>
+    </thead>
+    <tbody>
+      ${lines}
+    </tbody>
+  `
  }
