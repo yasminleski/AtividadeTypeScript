@@ -8,17 +8,17 @@ const gender = document.querySelector<HTMLSelectElement>('#gender')!
 const form = document.querySelector<HTMLFontElement>('form')!
 const message = document.querySelector<HTMLDivElement>('#message')!
 const salvar = document.querySelector<HTMLButtonElement>('#btnSalvar')!
+const filtroName = document.querySelector<HTMLInputElement>('#filtro')!
 const table = document.querySelector('table')!
-const filtro = document.querySelector<HTMLInputElement>('#filtro')!
+const achar = document.querySelector<HTMLButtonElement>('#btnAchar')!
 
-showPersons()
 
 let personLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person") || '{}')  
 let namesTable = personLocalStorage.map(p => p.name)
 
 const persons: Person[] = []
 
-
+showPersons()
 salvar.addEventListener('click', (ev: Event) => {
     ev.preventDefault()
   
@@ -86,17 +86,16 @@ function showPersons() {
      }
    }
 
-   let sortPersons = [...namesTable].sort()
+   let sortPersons = [...persons].sort()
    let lines = ''
  
-   for (let i = 0; i< sortPersons.length; i++) {
+   for (const pessoa of sortPersons) {
      lines += `
        <tr>
-         <td>${sortPersons[i]}</td>
+         <td>${(pessoa as Person).name}</td>
        </tr>
        `  
    }
-  table.style.display = 'table'
   table.innerHTML = `
     <thead>
       <tr> 
@@ -108,3 +107,39 @@ function showPersons() {
     </tbody>
   `
 }
+
+achar.addEventListener('click', (ev: Event) =>{
+  ev.preventDefault()
+
+  function filter(){
+    if (!filtroName.value){
+      showPersons()
+    } 
+    else {
+      let personLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  
+
+
+      const onlyName = (obj: typeof personLocalStorage[0]) => obj.name.includes(filtroName.value)
+      
+      let filter = personLocalStorage.filter(onlyName)
+      let lines = ''
+      for (const authors of filter){
+          lines += `
+          <tr>
+            <td>${(authors as Person).name}</td>
+          </tr>
+          `
+      }
+      table.innerHTML = `
+        <thead>
+        <tr> 
+            Autores
+        </tr>
+        </thead>
+        <tbody>
+        ${lines}
+        </tbody>
+        `
+    }}
+    filter()
+})
