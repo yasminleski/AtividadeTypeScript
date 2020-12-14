@@ -7,17 +7,19 @@ const birth = document.querySelector<HTMLInputElement>('#birth')!
 const gender = document.querySelector<HTMLSelectElement>('#gender')!
 const form = document.querySelector<HTMLFontElement>('form')!
 const message = document.querySelector<HTMLDivElement>('#message')!
+const salvar = document.querySelector<HTMLButtonElement>('#btnSalvar')!
 const table = document.querySelector('table')!
 const filtro = document.querySelector<HTMLInputElement>('#filtro')!
+
+showPersons()
 
 let personLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person") || '{}')  
 let namesTable = personLocalStorage.map(p => p.name)
 
 const persons: Person[] = []
 
-showPersons()
 
-form.addEventListener('submit', (ev: Event) => {
+salvar.addEventListener('click', (ev: Event) => {
     ev.preventDefault()
   
     const valorName = name.value.trim()
@@ -53,7 +55,7 @@ form.addEventListener('submit', (ev: Event) => {
         var birthNew = new Date(birth.value)
 
       const person = new Person(
-        name.value,
+        capitalize(name.value),
         birthNew,
         gender.value === 'f' ? Gender.Female : Gender.Male
         )

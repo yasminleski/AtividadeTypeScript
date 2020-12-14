@@ -21,14 +21,17 @@ const table = document.querySelector('table')!
 const books: Book[] = []
 const periodicais: Periodical[] = []
 
-let bookLocalStorage: Array<Book> = JSON.parse(localStorage.getItem("book")!)
-let booksTable = bookLocalStorage.map(p => p.title)!
+type ObjectWitchTitle = {title: string} // transforma title em string
+const sortTitle = (a:ObjectWitchTitle, b:ObjectWitchTitle) => a.title.localeCompare(b.title)
+
+let personsLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  // bucar no local storage a person
+let names = personsLocalStorage.map(p => p.name)  // pegar so os name de person
 
 function carregarAuthor() {
     author.options.length = 0 
     author.add(new Option("Selecione um autor:", ""))
-    for (var i = 0; i < booksTable.length; i++) {
-        author.add(new Option(booksTable[i].toString(), i.toString()));
+    for (var i = 0; i < names.length; i++) {
+        author.add(new Option(names[i].toString(), i.toString()));
     }
 }
 
@@ -78,7 +81,7 @@ form.addEventListener('submit', (ev: Event) =>{
     ev.preventDefault()
 
     var indice = author.value
-    let bookL = bookLocalStorage[parseInt(indice)]
+    let person = personsLocalStorage[parseInt(indice)]
 
 
     if(!title.value.trim()){
@@ -159,7 +162,7 @@ if (selectType.value == "livros") {
             capitalize(title.value),
             subtitle.value,
             datapublishedAt,
-            bookL,
+            person
         )
 
         books.push(book)
@@ -187,7 +190,7 @@ if (selectType.value == "livros") {
             capitalize(title.value),
             subtitle.value,
             datapublishedAt,
-            booksTable
+            person
         )
         
         periodicais.push(periodical)
@@ -220,7 +223,31 @@ function showBooks() {
         ))
      }
    }
- }
+
+   if (selectType.value == 'livros'){
+       let aux = [...books].sort(sortTitle)
+        let lines = ''
+        for(const titulos of aux){
+            lines +=  `
+
+            <tr>
+              <td>${(titulos as Book).title}</td>
+            </tr>
+            `  
+        }
+
+  table.innerHTML = `
+    <thead>
+      <tr> 
+          Titulos
+      </tr>
+    </thead>
+    <tbody>
+      ${lines}
+    </tbody>
+  `
+
+} }
  function showPeriodical() {
     if (localStorage.getItem('periodicais')) {
       const data = JSON.parse(localStorage.getItem('periodicais')!)
@@ -239,26 +266,29 @@ function showBooks() {
         ))
      }
    }
-   let sortPersons = [...booksTable].sort()
-   let lines = ''
- 
-   for (let i = 0; i< sortPersons.length; i++) {
-     lines +=  `
-       <tr>
-         <td>${sortPersons[i]}</td>
-       </tr>
-       `  
-   }
+   if (selectType.value == 'periodicos'){
+    let aux2 = [...periodicais].sort(sortTitle)
+     let lines = ''
+     for(const titulos of aux2){
+         lines +=  `
 
-  table.style.display = 'table'
-  table.innerHTML = `
-    <thead>
-      <tr> 
-          Autor
-      </tr>
-    </thead>
-    <tbody>
-      ${lines}
-    </tbody>
-  `
- }
+         <tr>
+           <td>${(titulos as Periodical).title}</td>
+         </tr>
+         `  
+     }
+
+table.innerHTML = `
+ <thead>
+   <tr> 
+       Titulos
+   </tr>
+ </thead>
+ <tbody>
+   ${lines}
+ </tbody>
+`
+ }}
+
+
+ 
