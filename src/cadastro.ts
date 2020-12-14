@@ -17,6 +17,9 @@ const issue = document.querySelector<HTMLInputElement>('#issue')!
 const message = document.querySelector<HTMLParagraphElement>('#message')!
 const form = document.querySelector<HTMLFormElement>('form')!
 const table = document.querySelector('table')!
+const achar = document.querySelector<HTMLButtonElement>('#btnAchar')!
+const salvar = document.querySelector<HTMLButtonElement>('#btnSalvar')!
+const filtroBook = document.querySelector<HTMLInputElement>('#filtro')!
 
 const books: Book[] = []
 const periodicais: Periodical[] = []
@@ -24,8 +27,8 @@ const periodicais: Periodical[] = []
 type ObjectWitchTitle = {title: string} // transforma title em string
 const sortTitle = (a:ObjectWitchTitle, b:ObjectWitchTitle) => a.title.localeCompare(b.title)
 
-let personsLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  // bucar no local storage a person
-let names = personsLocalStorage.map(p => p.name)  // pegar so os name de person
+let booksLocalStorage: Array<Person> = JSON.parse(localStorage.getItem("person")!)  // bucar no local storage a person
+let names = booksLocalStorage.map(p => p.name)  // pegar so os name de person
 
 function carregarAuthor() {
     author.options.length = 0 
@@ -77,11 +80,11 @@ selectType.addEventListener('change', (event) => {
     }
 })
 
-form.addEventListener('submit', (ev: Event) =>{
+salvar.addEventListener('click', (ev: Event) =>{
     ev.preventDefault()
 
     var indice = author.value
-    let person = personsLocalStorage[parseInt(indice)]
+    let person = booksLocalStorage[parseInt(indice)]
 
 
     if(!title.value.trim()){
@@ -224,30 +227,63 @@ function showBooks() {
      }
    }
 
-   if (selectType.value == 'livros'){
-       let aux = [...books].sort(sortTitle)
-        let lines = ''
-        for(const titulos of aux){
-            lines +=  `
+   let sortBook = [...books].sort()
+    let lines = ''
 
+    for(const livro of sortBook){
+        lines += `
             <tr>
-              <td>${(titulos as Book).title}</td>
+            <td>${(livro as Book).title}</td>
             </tr>
-            `  
-        }
+        `
+    }
 
-  table.innerHTML = `
+    table.innerHTML =`
     <thead>
-      <tr> 
-          Titulos
-      </tr>
+        <tr>
+            Livros
+        </tr>
     </thead>
     <tbody>
-      ${lines}
+        ${lines}
     </tbody>
-  `
+    `
+}
+achar.addEventListener('click', (ev: Event) =>{
+    ev.preventDefault()
+    function filter(){
+        if(!filtroBook.value){
+            showBooks()
+        }else{
+            let booksLocalStorage: Array<Book> = JSON.parse(localStorage.getItem("book")!)  // bucar no local storage a person
+            
+            const onlyBook = (obj: typeof booksLocalStorage[0]) => obj.title.includes(filtroBook.value)
+            
+            let filter = booksLocalStorage.filter(onlyBook)
+            let lines = ''
 
-} }
+            for(const books of filter){
+                lines += `
+                <tr>
+                    <td>${(books as Book).title}</td>
+                </tr>
+                `
+            }
+            table.innerHTML = `
+            <thead>
+            <tr>
+                Livros
+            <tr>
+            </thead>
+            <tbody>
+                ${lines}
+            </tbody>
+            `
+        }
+    }
+    filter()
+})
+
  function showPeriodical() {
     if (localStorage.getItem('periodicais')) {
       const data = JSON.parse(localStorage.getItem('periodicais')!)
@@ -264,31 +300,38 @@ function showBooks() {
             item.publishedAt,
             item.author
         ))
-     }
-   }
-   if (selectType.value == 'periodicos'){
-    let aux2 = [...periodicais].sort(sortTitle)
-     let lines = ''
-     for(const titulos of aux2){
-         lines +=  `
-
-         <tr>
-           <td>${(titulos as Periodical).title}</td>
-         </tr>
-         `  
-     }
-
-table.innerHTML = `
- <thead>
-   <tr> 
-       Titulos
-   </tr>
- </thead>
- <tbody>
-   ${lines}
- </tbody>
-`
- }}
-
-
- 
+     }}
+     achar.addEventListener('click', (ev: Event) =>{
+        ev.preventDefault()
+      
+        function filter(){
+          if (!filtroBook.value){
+            showBooks()
+          } 
+          else {
+            let booksLocalStorage: Array<Book> = JSON.parse(localStorage.getItem("person")!)  
+      
+            const onlyName = (obj: typeof booksLocalStorage[0]) => obj.title.includes(filtroBook.value)
+            
+            let filter = booksLocalStorage.filter(onlyName)
+            let lines = ''
+            for (const livros of filter){
+                lines += `
+                <tr>
+                  <td>${(livros as Book).title}</td>
+                  </tr>
+                  `
+              }
+              table.innerHTML = `
+                <thead>
+                <tr> 
+                    Autores
+                </tr>
+                </thead>
+                <tbody>
+                ${lines}
+                </tbody>
+                `
+            }} }
+            filter()
+        })
